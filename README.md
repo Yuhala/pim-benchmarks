@@ -45,25 +45,7 @@ git clone https://github.com/Yuhala/pim-benchmarks.git && cd pim-benchmarks/poly
 - TODO
 
 
-
 ## Disclaimer
 - Some parts of the code are a bit messy and can/will be refactored eventually.
 
 
-## Useful Math References
-
-https://github.com/saratkiran/Fast-Fourier-Transform-for-Polynomial-Multiplication/blob/master/Code/CS5050_HW4/src/main.java
-
-https://lloydrochester.com/post/c/example-fft/
-
-https://medium.com/@aiswaryamathur/understanding-fast-fourier-transform-from-scratch-to-solve-polynomial-multiplication-8018d511162f
-
-https://math.libretexts.org/Bookshelves/Combinatorics_and_Discrete_Mathematics/Applied_Discrete_Structures_(Doerr_and_Levasseur)/16%3A_An_Introduction_to_Rings_and_Fields/16.03%3A_Polynomial_Rings
-
-https://home.cse.ust.hk/~dekai/271/notes/L03/L03.pdf
-
-https://www.sciencedirect.com/science/article/pii/S2213020916302002?ref=pdf_download&fr=RR-2&rr=86b793f9ee8a3b64
-
-FFT: https://www.cs.cmu.edu/afs/cs/academic/class/15451-s10/www/lectures/lect0423.txt
-
-SimplePIM: https://people.inf.ethz.ch/omutlu/pub/SimplePIM_pact23.pdf
