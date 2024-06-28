@@ -34,9 +34,9 @@ git clone https://github.com/Yuhala/pim-benchmarks.git && cd pim-benchmarks/poly
 ./dpu-poly-bench addition 32 1024
 ```
 - Each benchmark is run `100` times with `20` warm-up runs.
-- To run the corresponding CPU-based benchmarks, replace `dpu-poly-bench` with `cpu-poly-bench`. For example:
+- To run the corresponding CPU-based benchmarks, replace `dpu-poly-bench` with `cpu-poly-bench` and do not specify any number of DPUs. For example:
 ```
-./cpu-poly-bench addition 32 1024
+./cpu-poly-bench addition 1024
 ```
 
 ## Analysing and plotting the results
