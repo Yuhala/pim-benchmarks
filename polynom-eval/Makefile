@@ -22,17 +22,20 @@ TASKLET_FLAGS := -DNR_TASKLETS=16 -DSTACK_SIZE_DEFAULT=256 -DSTACK_SIZE_TASKLET_
 
 # RECIPES
 
-SRCS = bench.c polymulti.c polyadd.c 
+SRCS = bench.c polymulti.c polyadd.c cpu-bench.c dpu-bench.c
 OBJS = $(SRCS:.c=.o)
-BINS = dpu-poly-bench main.dpu
+BINS = dpu-poly-bench cpu-poly-bench main.dpu
 
 all: $(BINS)
 
 %.o: %.c
 	$(CC) $(CCFLAGS) $(DPU_PATHS) -c $< -o $@ 
 
-dpu-poly-bench: $(OBJS)
+dpu-poly-bench: bench.o polymulti.o polyadd.o dpu-bench.o
 	$(LD) $(LDFLAGS) -pthread $^ -o $@  $(DPU_PATHS)  
+
+cpu-poly-bench: bench.o polymulti.o polyadd.o cpu-bench.o
+	$(LD) $(LDFLAGS) -pthread $^ -o $@  $(DPU_PATHS)   
 
 depend:
 	makedepend -Y -I. $(SRCS)

@@ -1,12 +1,13 @@
 ## pim-benchmarks
 - This repository contains micro-benchmarks implementing polynomial operations on [ UPMEM processing in memory (PIM)](https://www.upmem.com/) hardware.
 - The main polynomial evaluations evaluated are: `point-wise addition`, `point-wise multiplication`, and `naive polynomial multiplication` or `convolutions`.
+- There are corresponding CPU-based benchmarks for the same operation.
 - These evaluations accompany our SRDS 2024 paper: ` Evaluating the Potential of In-Memory Processing to Accelerate Homomorphic Encryption`.
   
 ## How to run the benchmarks
 - The benchmarks can be tested on a server with real PIM hardware or on one without real PIM hardware (emulated PIM).
 - Install the [UPMEM SDK](https://sdk.upmem.com/).
-- For example, on the following commands sets up the SDK on a system with `Ubuntu 20.04 LTS`
+- For example, the following sets up the SDK on a system with `Ubuntu 20.04 LTS`.
 ```
 wget http://sdk-releases.upmem.com/2024.1.0/ubuntu_20.04/upmem-2024.1.0-Linux-x86_64.tar.gz
 tar -xvf upmem-2024.1.0-Linux-x86_64.tar.gz
@@ -20,7 +21,7 @@ git clone https://github.com/Yuhala/pim-benchmarks.git && cd pim-benchmarks/poly
 ```
 ./create_results_folders.sh
 ```
-- Build the benchmarks by running `make`. The resulting executable is `dpu-poly-bench`.
+- Build the benchmarks by running `make`. This builds two executables: `dpu-poly-bench` and `cpu-poly-bench`.
 - To run a specific benchmark, e.g., pointwise addition, do:
 ```
 ./dpu-poly-bench <benchmark name> <num DPUs> <polynomial size>
@@ -33,7 +34,10 @@ git clone https://github.com/Yuhala/pim-benchmarks.git && cd pim-benchmarks/poly
 ./dpu-poly-bench addition 32 1024
 ```
 - Each benchmark is run `100` times with `20` warm-up runs.
-
+- To run the corresponding CPU-based benchmarks, replace `dpu-poly-bench` with `cpu-poly-bench`. For example:
+```
+./cpu-poly-bench addition 32 1024
+```
 
 ## Analysing and plotting the results
 - TODO

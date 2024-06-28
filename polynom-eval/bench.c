@@ -44,7 +44,7 @@ int dpu_num[] = {64, 128, 256, 512, 1024, 2048};
 #define DPU_NUM 6
 
 // forward declarations
-void printHelp();
+static void printHelp();
 
 void start_clock(Timer *timer)
 {
@@ -273,27 +273,10 @@ int *generate_zero_poly(int n)
 	return polynomial;
 }
 
-void run_cpu_bench()
-{
-
-	/**
-	 * CPU benchmarks
-	 */
-
-	bench_poly_add();
-	printf("----- CPU bench: addition complete ----\n");
-
-	bench_poly_multi_coeffwise();
-	printf("----- CPU bench: coeffwise multi complete ----\n");
-
-	bench_poly_multi_naive();
-	printf("----- CPU bench: naive multi complete ----\n");
-}
-
 /**
  * Benchmark polynomial summation for various sizes
  */
-void bench_poly_add()
+void bench_poly_add(int size)
 {
 	Timer t;
 	t.num_runs = RUNS;
@@ -301,167 +284,131 @@ void bench_poly_add()
 	strcpy(t.bench_name, "cpu_poly_add.csv");
 	char cpu_time_path[256];
 
-	int size;
 	double thread_time;
 	double total;
 	// int *p, *q, *pq;
 
-	for (int i = 0; i < POLY_SIZES; i++)
+	allocate_polynomials(size, POLY_ADD);
+
+	t.n = size;
+	int exp = findExponent(size);
+	// sprintf(cpu_time_path, "%s %d %s", "./results/cpu/addition/cpu_time_", exp, ".csv");
+	sprintf(cpu_time_path, "./results/cpu/addition/cpu_time_%d.csv", exp);
+
+	/**
+	 * Measure and log CPU execution times
+	 */
+	for (int run_ctr = 0; run_ctr < WARM_UP + RUNS; run_ctr++)
 	{
-		thread_time = 0;
-		total = 0;
-		// Generate polynomials
 
-#ifdef USE_BIG_POLY
-		size = big_poly[i];
-#else
-		size = poly_sizes[i];
-#endif
+		start_clock(&t);
+		poly_add(p, q, res, size, &thread_time);
+		stop_clock(&t);
+		clock_ticks = (double)(t.stop - t.start);
 
-		allocate_polynomials(size, POLY_ADD);
-
-		t.n = size;
-		int exp = findExponent(size);
-		// sprintf(cpu_time_path, "%s %d %s", "./results/cpu/addition/cpu_time_", exp, ".csv");
-		sprintf(cpu_time_path, "./results/cpu/addition/cpu_time_%d.csv", exp);
-
-		/**
-		 * Measure and log CPU execution times
-		 */
-		for (int run_ctr = 0; run_ctr < WARM_UP + RUNS; run_ctr++)
+		// only log after warm up
+		if (run_ctr >= WARM_UP)
 		{
-
-			start_clock(&t);
-			poly_add(p, q, res, size, &thread_time);
-			stop_clock(&t);
-			clock_ticks = (double)(t.stop - t.start);
-
-			// only log after warm up
-			if (run_ctr >= WARM_UP)
-			{
-				log_raw_results(cpu_time_path, clock_ticks);
-			}
+			log_raw_results(cpu_time_path, clock_ticks);
 		}
-
-		// stop bench and log stats
-		// stop_clock(&t);
-		// t.time_elapsed = total;
-
-		// log_stats(&t);
-		// printf("-----------> Bench: %s n = : %d elapsed time = %f\n", t.bench_name, size, t.time_elapsed / RUNS);
-
-		// print_results_buffer(2);
-
-		// cleanup
-		free_polynomials();
 	}
+
+	// stop bench and log stats
+	// stop_clock(&t);
+	// t.time_elapsed = total;
+
+	// log_stats(&t);
+	// printf("-----------> Bench: %s n = : %d elapsed time = %f\n", t.bench_name, size, t.time_elapsed / RUNS);
+
+	// print_results_buffer(2);
+
+	// cleanup
+	free_polynomials();
 }
 
 /**
  * Benchmark naive polynomial multiplication on CPU
  */
-void bench_poly_multi_naive()
+void bench_poly_multi_naive(int size)
 {
 	Timer t;
 	t.num_runs = RUNS;
 	strcpy(t.bench_name, "cpu_poly_multi_naive.csv");
 	char cpu_time_path[256];
 
-	int n;
+	int n = size;
 	double thread_time;
 	double total;
 
-	for (int i = 0; i < POLY_SIZES - 1; i++)
+	thread_time = 0;
+	total = 0;
+	allocate_polynomials(n, POLY_MULTI_NAIVE);
+
+	t.n = n;
+
+	int exp = findExponent(n);
+	// sprintf(cpu_time_path, "%s %d %s", "./results/cpu/naive_multi/cpu_time_", exp, ".csv");
+	sprintf(cpu_time_path, "./results/cpu/naive_multi/cpu_time_%d.csv", exp);
+
+	/**
+	 * Measure and log CPU execution times
+	 */
+	for (int run_ctr = 0; run_ctr < WARM_UP + RUNS; run_ctr++)
 	{
 
-// Generate polynomials
-#ifdef USE_BIG_POLY
-		n = big_poly[i];
-#else
-		n = poly_sizes[i];
-#endif
-		thread_time = 0;
-		total = 0;
-		allocate_polynomials(n, POLY_MULTI_NAIVE);
-
-		t.n = n;
-
-		int exp = findExponent(n);
-		// sprintf(cpu_time_path, "%s %d %s", "./results/cpu/naive_multi/cpu_time_", exp, ".csv");
-		sprintf(cpu_time_path, "./results/cpu/naive_multi/cpu_time_%d.csv", exp);
-
-		/**
-		 * Measure and log CPU execution times
-		 */
-		for (int run_ctr = 0; run_ctr < WARM_UP + RUNS; run_ctr++)
+		start_clock(&t);
+		poly_multi_naive(p, q, res, n, &thread_time);
+		stop_clock(&t);
+		clock_ticks = (double)(t.stop - t.start);
+		// only log after warm up
+		if (run_ctr >= WARM_UP)
 		{
-
-			start_clock(&t);
-			poly_multi_naive(p, q, res, n, &thread_time);
-			stop_clock(&t);
-			clock_ticks = (double)(t.stop - t.start);
-			// only log after warm up
-			if (run_ctr >= WARM_UP)
-			{
-				log_raw_results(cpu_time_path, clock_ticks);
-			}
+			log_raw_results(cpu_time_path, clock_ticks);
 		}
-
-		// cleanup
-		free_polynomials();
 	}
+
+	// cleanup
+	free_polynomials();
 }
-void bench_poly_multi_coeffwise()
+void bench_poly_multi_coeffwise(int size)
 {
 	Timer t;
 	t.num_runs = RUNS;
 	strcpy(t.bench_name, "cpu_poly_multi_coeffwise.csv");
 
 	char cpu_time_path[256];
-
-	int size;
 	double thread_time;
 	double total;
 
-	for (int i = 0; i < POLY_SIZES; i++)
+	allocate_polynomials(size, POLY_MULTI_COEFFWISE);
+	thread_time = 0;
+	total = 0;
+
+	t.n = size;
+	int exp = findExponent(size);
+	// sprintf(cpu_time_path, "%s %d %s", "./results/cpu/coeffwise_multi/cpu_time_", exp, ".csv");
+	sprintf(cpu_time_path, "./results/cpu/coeffwise_multi/cpu_time_%d.csv", exp);
+
+	/**
+	 * Measure and log CPU execution times
+	 */
+	for (int run_ctr = 0; run_ctr < WARM_UP + RUNS; run_ctr++)
 	{
 
-// Generate polynomials
-#ifdef USE_BIG_POLY
-		size = big_poly[i];
-#else
-		size = poly_sizes[i];
-#endif
-		allocate_polynomials(size, POLY_MULTI_COEFFWISE);
-		thread_time = 0;
-		total = 0;
+		start_clock(&t);
+		poly_multi_coeffwise(p, q, res, size, &thread_time);
+		stop_clock(&t);
+		clock_ticks = (double)(t.stop - t.start);
 
-		t.n = size;
-		int exp = findExponent(size);
-		// sprintf(cpu_time_path, "%s %d %s", "./results/cpu/coeffwise_multi/cpu_time_", exp, ".csv");
-		sprintf(cpu_time_path, "./results/cpu/coeffwise_multi/cpu_time_%d.csv", exp);
-
-		/**
-		 * Measure and log CPU execution times
-		 */
-		for (int run_ctr = 0; run_ctr < WARM_UP + RUNS; run_ctr++)
+		// only log after warm up
+		if (run_ctr >= WARM_UP)
 		{
-
-			start_clock(&t);
-			poly_multi_coeffwise(p, q, res, size, &thread_time);
-			stop_clock(&t);
-			clock_ticks = (double)(t.stop - t.start);
-
-			// only log after warm up
-			if (run_ctr >= WARM_UP)
-			{
-				log_raw_results(cpu_time_path, clock_ticks);
-			}
+			log_raw_results(cpu_time_path, clock_ticks);
 		}
-
-		// cleanup
-		free_polynomials();
 	}
+
+	// cleanup
+	free_polynomials();
 }
 void bench_poly_multi_fft()
 {
@@ -794,7 +741,7 @@ void run_dpu_bench(char *bench_name, poly_op op, int num_dpus, int n)
 	printf("Avg. DPU time = %f \n", total_dpu_time);
 	*/
 	DPU_ASSERT(dpu_free(dpu_set));
-
+	free_polynomials();
 	// free(sums);
 }
 
@@ -901,70 +848,3 @@ void bench_dpu_naive_multi(int vary_dpus)
 	}
 }
 
-void printHelp()
-{
-	printf("-----------------  Usage  -----------------\n"
-		   "- ./dpu-poly-bench <benchmark name> <#DPUs> <polynomial size>)\n"
-		   "- E.g., ./dpu-poly-bench addition 32 1024\n"
-		   "---------------------------------------------\n");
-}
-
-int main(int argc, char **argv)
-{
-	srand(time(NULL)); // initialize seed once
-	poly_op op;
-
-	if (argc != 4)
-	{
-		printHelp();
-		exit(0);
-	}
-
-	if (!folder_exists("./results"))
-	{
-		printf("You must run script to create results folder.\n");
-		exit(0);
-		
-	}
-
-	int num_dpus = atoi(argv[2]);
-	int n = atoi(argv[3]);
-
-	if (strcmp(argv[1], "addition") == 0)
-	{
-		op = POLY_ADD;
-	}
-	else if (strcmp(argv[1], "naive_multi") == 0)
-	{
-		op = POLY_MULTI_NAIVE;
-	}
-	else if (strcmp(argv[1], "cw_multi") == 0)
-	{
-		op = POLY_MULTI_COEFFWISE;
-	}
-
-	switch (op)
-	{
-	case POLY_ADD:
-		printf("----- Running PIM polynomial addition benchmark ----\n");
-		run_dpu_bench("addition", POLY_ADD, num_dpus, n);
-		break;
-
-	case POLY_MULTI_COEFFWISE:
-		printf("----- Running PIM point-wise polynomial multiplication benchmark ----\n");
-		run_dpu_bench("coeffwise_multi", POLY_MULTI_COEFFWISE, num_dpus, n);
-		break;
-
-	case POLY_MULTI_NAIVE:
-		printf("----- Running PIM naive polynomial multiplication benchmark ----\n");
-		run_dpu_bench("naive_multi", POLY_MULTI_NAIVE, num_dpus, n);
-		break;
-
-	default:
-		printHelp();
-		exit(0);
-		break;
-	}
-
-	return 0;
-}

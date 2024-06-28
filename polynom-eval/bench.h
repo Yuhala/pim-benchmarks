@@ -64,9 +64,9 @@ void stop_dpu_timer(dpu_timer *timer);
 int findExponent(int n);
 int *generate_poly(int n);
 int *generate_zero_poly(int n);
-void bench_poly_add();
-void bench_poly_multi_naive();
-void bench_poly_multi_coeffwise();
+void bench_poly_add(int n);
+void bench_poly_multi_naive(int n);
+void bench_poly_multi_coeffwise(int n);
 int allocate_polynomials(int n, poly_op op);
 void free_polynomials();
 void print_results_buffer(int n);
@@ -77,10 +77,10 @@ uint32_t get_dpu_cycles(dpu_set_t dpu_set, dpu_set_t dpu, int n, int num_dpus);
 
 void get_dpu_polynomial_result(dpu_set_t dpu_set, dpu_set_t dpu, int n, int num_dpus, poly_op op);
 
-
 void bench_dpu_addition(int vary_dpus);
 void bench_dpu_coeffwise_multi(int vary_dpus);
 void bench_dpu_naive_multi(int vary_dpus);
+void run_dpu_bench(char *bench_name, poly_op op, int num_dpus, int n);
 
 // Writing results
 void write_results_n(const char *path, int n, double time, const char *col_name);
