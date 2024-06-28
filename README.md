@@ -1,6 +1,6 @@
 ## pim-benchmarks
-- This repository contains micro-benchmarks implementing polynomial operations on [ UPMEM processing in memory (PIM)](https://www.upmem.com/) hardware.
-- The main polynomial evaluations evaluated are: `point-wise addition`, `point-wise multiplication`, and `naive polynomial multiplication` or `convolutions`.
+- This repository contains micro-benchmarks implementing polynomial arithmetic on [ UPMEM processing in memory (PIM)](https://www.upmem.com/) hardware.
+- The polynomial operations evaluated are: `point-wise addition`, `point-wise multiplication`, and `naive polynomial multiplication` or `convolutions`.
 - There are corresponding CPU-based benchmarks for the same operation.
 - These evaluations accompany our SRDS 2024 paper: ` Evaluating the Potential of In-Memory Processing to Accelerate Homomorphic Encryption`.
   
